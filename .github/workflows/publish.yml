@@ -1,6 +1,7 @@
 name: 构建
 
 on:
+  push:
   release:
     types: [published]
   pull_request:
@@ -29,20 +30,21 @@ jobs:
       - name: Run Windows build
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
+          pip install -r requirements.txt
           pip install pyinstaller
           pyinstaller --onefile --noconsole --icon=icon.ico main.py
-
-      - name: Upload
-        uses: actions/upload-artifact@v4.4.2
-        with:
-          name: ${{ matrix.os }}-${{ matrix.arch }}
-          path: ./dist/*.exe
 
       - name: Compress GUI contents
         run: |
           copy *.png ./dist/
           copy *.ico ./dist/
           Compress-Archive -Path ./dist/* -DestinationPath gui_contents-${{ matrix.os }}-${{ matrix.arch }}.zip
+
+      - name: Upload
+        uses: actions/upload-artifact@v4.4.2
+        with:
+          name: ${{ matrix.os }}-${{ matrix.arch }}
+          path: .\*.zip
 
       - name: Upload assets to GitHub Release
         if: github.event_name == 'release' && github.event.action == 'published'
