@@ -1,0 +1,6 @@
+pyautogui
+pygetwindow
+Pillow
+pystray
+numpy
+opencv-python
