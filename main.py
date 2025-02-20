@@ -7,6 +7,7 @@ import pystray
 import threading
 import numpy as np
 import cv2
+import traceback  # 新增导入
 
 # 加载图标
 image = PIL.Image.open("icon.png")
@@ -19,6 +20,15 @@ def captureScreen(region = None):
 
 def detectClarity(image):
     return cv2.Laplacian(cv2.cvtColor(image, cv2.COLOR_RGB2BGR), cv2.CV_64F).var()
+
+# 新增 safe_locate 函数：包装 locateCenterOnScreen，找不到图片时返回 None
+def safe_locate(image_path, confidence=0.8):
+    try:
+        return pag.locateCenterOnScreen(image_path, confidence=confidence)
+    except pag.ImageNotFoundException:
+        return None
+    except Exception:
+        return None
 
 def tray_icon_thread():
     def on_start(icon, item):
@@ -48,11 +58,16 @@ def monitoring_thread():
             if monitoring_running:
                 if "希沃视频展台" == pgw.getActiveWindowTitle():
                     time.sleep(3)
-                    photoPos = pag.locateCenterOnScreen("photo.png", confidence=0.8)
+                    photoPos = safe_locate("photo.png", confidence=0.8)
+                    if photoPos is None:
+                        time.sleep(1)
+                        continue
                     while monitoring_running and not stop_all.is_set():
                         time.sleep(1)
-                        lightPos = pag.locateCenterOnScreen("lighted.png", confidence=0.8)
-                        if lightPos is not None and detectClarity(captureScreen((760, 340, 400, 400))):
+                        lightPos = safe_locate("lighted.png", confidence=0.8)
+                        if lightPos is None:
+                            continue
+                        if detectClarity(captureScreen((760, 340, 400, 400))):
                             pag.leftClick(photoPos)
                             pag.leftClick(lightPos)
                 else:
@@ -60,7 +75,9 @@ def monitoring_thread():
             else:
                 time.sleep(1)
         except Exception:
-            pass
+            with open("error.log", "a") as log_file:
+                log_file.write(time.strftime("%Y-%m-%d %H:%M:%S") + " - " + traceback.format_exc() + "\n")
+            # 忽略错误继续执行
 
 tray_thread = threading.Thread(target=tray_icon_thread)
 monitoring_thread = threading.Thread(target=monitoring_thread)
