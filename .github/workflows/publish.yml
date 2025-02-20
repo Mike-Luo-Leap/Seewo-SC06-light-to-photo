@@ -1,4 +1,4 @@
-name: 构建
+name: 构建&版本发布
 
 on:
   push:
@@ -20,33 +20,33 @@ jobs:
         os: [windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout repository
+      - name: 签出存储库
         uses: actions/checkout@v4.2.2
-      - name: Setup Python
+      - name: 安装 Python
         uses: actions/setup-python@v5.3.0
         with:
           python-version: '3.10.11'
           architecture: ${{ matrix.arch }}
-      - name: Run Windows build
+      - name: 安装依赖并打包
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           pip install -r requirements.txt
           pip install pyinstaller
           pyinstaller --onefile --noconsole --icon=icon.ico main.py
 
-      - name: Compress GUI contents
+      - name: 打包生成文件
         run: |
           copy *.png ./dist/
           copy *.ico ./dist/
           Compress-Archive -Path ./dist/* -DestinationPath gui_contents-${{ matrix.os }}-${{ matrix.arch }}.zip
 
-      - name: Upload
+      - name: 上传到 Actions
         uses: actions/upload-artifact@v4.4.2
         with:
           name: ${{ matrix.os }}-${{ matrix.arch }}
           path: .\*.zip
 
-      - name: Upload assets to GitHub Release
+      - name: 上传到 GitHub Release （仅发布）
         if: github.event_name == 'release' && github.event.action == 'published'
         uses: softprops/action-gh-release@v1
         with:
