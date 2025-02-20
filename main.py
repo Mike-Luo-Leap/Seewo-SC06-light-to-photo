@@ -7,13 +7,17 @@ import pystray
 import threading
 import numpy as np
 import cv2
-import traceback  # 新增导入
+import traceback
+import logging  # 新增导入
 
 # 加载图标
 image = PIL.Image.open("icon.png")
 
 stop_all = threading.Event()
 monitoring_running = True  # 将默认状态置为 True
+
+# 配置日志记录
+logging.basicConfig(filename="error.log", level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def captureScreen(region = None):
     return cv2.cvtColor(np.array(pag.screenshot(region=region)), cv2.COLOR_RGB2BGR)
@@ -55,8 +59,12 @@ def tray_icon_thread():
 def monitoring_thread():
     while not stop_all.is_set():
         try:
+            try:
+                active_title = pgw.getActiveWindowTitle()
+            except Exception:
+                active_title = ""
             if monitoring_running:
-                if "希沃视频展台" == pgw.getActiveWindowTitle():
+                if active_title == "希沃视频展台":
                     time.sleep(3)
                     photoPos = safe_locate("photo.png", confidence=0.8)
                     if photoPos is None:
@@ -75,8 +83,7 @@ def monitoring_thread():
             else:
                 time.sleep(1)
         except Exception:
-            with open("error.log", "a") as log_file:
-                log_file.write(time.strftime("%Y-%m-%d %H:%M:%S") + " - " + traceback.format_exc() + "\n")
+            logging.error(traceback.format_exc())
             # 忽略错误继续执行
 
 tray_thread = threading.Thread(target=tray_icon_thread)
