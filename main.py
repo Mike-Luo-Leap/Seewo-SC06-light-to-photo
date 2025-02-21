@@ -57,6 +57,7 @@ def tray_icon_thread():
     icon.run()
 
 def monitoring_thread():
+    screenWidth, screenHeight = pag.size()
     while not stop_all.is_set():
         try:
             try:
@@ -75,7 +76,7 @@ def monitoring_thread():
                         lightPos = safe_locate("lighted.png", confidence=0.8)
                         if lightPos is None:
                             continue
-                        if detectClarity(captureScreen((760, 340, 400, 400))):
+                        if detectClarity(captureScreen((screenWidth / 2 - 200, screenHeight / 2 - 200, 400, 400))):
                             pag.leftClick(photoPos)
                             pag.leftClick(lightPos)
                 else:
