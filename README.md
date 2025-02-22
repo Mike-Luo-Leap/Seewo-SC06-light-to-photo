@@ -12,5 +12,5 @@
 强烈推荐重新截图拍照按键和**亮着的**展台灯按键放在同一目录下。
 
 
-## LICENCE
-[GNU GPLv3](https://github.com/Mike-Luo-Leap/Seewo-SC06-light-to-photo/LICENCE)
+## LICENSE
+[[GNU GPLv3](https://github.com/Mike-Luo-Leap/Seewo-SC06-light-to-photo/LICENSE)](https://github.com/Mike-Luo-Leap/Seewo-SC06-light-to-photo/blob/main/LICENSE)
