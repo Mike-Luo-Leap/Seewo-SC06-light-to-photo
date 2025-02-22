@@ -13,4 +13,4 @@
 
 
 ## LICENCE
-[GNU GPLv3](https://github.com/Mike-Luo-Leap/Seewo-SC06-light-to-photo/LICENSE)
+[GNU GPLv3](https://github.com/Mike-Luo-Leap/Seewo-SC06-light-to-photo/LICENCE)
