@@ -76,7 +76,7 @@ def monitoring_thread():
                         lightPos = safe_locate("lighted.png", confidence=0.8)
                         if lightPos is None:
                             continue
-                        if detectClarity(captureScreen((screenWidth / 2 - 200, screenHeight / 2 - 200, 400, 400))) >= 650:
+                        if detectClarity(captureScreen((screenWidth / 2 - 200, screenHeight / 2 - 200, 400, 400))) >= 65:
                             pag.leftClick(photoPos)
                             pag.leftClick(lightPos)
                 else:
