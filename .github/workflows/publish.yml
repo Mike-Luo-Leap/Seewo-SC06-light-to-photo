@@ -1,11 +1,8 @@
 name: 构建&版本发布
 
 on:
-  push:
   release:
     types: [published]
-  pull_request:
-  workflow_dispatch:
 
 concurrency:
   group: build-${{ github.ref }}
